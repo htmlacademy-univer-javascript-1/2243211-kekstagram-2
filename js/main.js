@@ -49,7 +49,7 @@ const getRandomNumber =(min, max) => {
     };
   }
   
-  const listComment = Array.from({length: getRandomNumber(1, 5)},createComment);
+  const listComment = Array.from({length: getRandomNumber(1, 6)},createComment);
   
   function createObject() {
     return {
@@ -61,3 +61,4 @@ const getRandomNumber =(min, max) => {
     };
   
   }
+  const listObject = Array.from({length: 25},createObject);
