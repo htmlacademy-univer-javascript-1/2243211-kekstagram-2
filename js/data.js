@@ -1,6 +1,6 @@
 import {getRandomNumber} from './util.js';
 
-const objectCount = 25;
+const PHOTO_OBJECTS_COUNT = 25;
 const DESCRIPTION = [
     'Работаем',
     'Отдыхаем',
@@ -15,7 +15,6 @@ const DESCRIPTION = [
     'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
     'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
     'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',
-  
   ];
   
   const NAMES = [
@@ -50,6 +49,6 @@ const DESCRIPTION = [
     };
   
   }
-  const createObjects = Array.from({length: objectCount},createObject);
+  const createObjects = Array.from({length: PHOTO_OBJECTS_COUNT},createObject);
   
   export {createObjects};
