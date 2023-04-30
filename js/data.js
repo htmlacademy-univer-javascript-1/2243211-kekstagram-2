@@ -39,7 +39,7 @@ const DESCRIPTION = [
   
   const listComment = Array.from({length: getRandomNumber(1, 6)},createComment);
   
-  function createObject() {
+  function createPhotoDescription() {
     return {
       id: getRandomNumber(1, 25),
       url: `photos/${getRandomNumber(1, 25)}.jpg`,
@@ -49,6 +49,7 @@ const DESCRIPTION = [
     };
   
   }
-  const createObjects = Array.from({length: PHOTO_OBJECTS_COUNT},createObject);
+  const generatePhotoDescription = Array.from({length: PHOTO_OBJECTS_COUNT},createObject);
   
-  export {createObjects};
+  export { createPhotoDescription, generatePhotoDescription };
+  

@@ -12,4 +12,7 @@ const getRandomNumber =(min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
-  export {getRandomNumber, checkLength};
+  const isEscapeKey = (evt) => evt.key === 'Escape';
+
+  export {getRandomNumber, checkLength, isEscapeKey};
+  
