@@ -69,7 +69,7 @@ pristine.addValidator(
 pristine.addValidator(
   textHashtagsInput,
   validateHashtagFormat,
-  'ХешТег в формате: #hashtag, длина ХешТега не более 20 символов. Хэштеги разделены пробелами'
+  'Формат: #хештег, длина ХешТега не более 20 символов. Хэштеги разделены пробелами!'
 );
 
 const blockSubmitBtn = (text) => {
@@ -88,7 +88,7 @@ imgUploadForm.addEventListener('submit', (evt) => {
 
   const isValid = pristine.validate();
   if (isValid) {
-    blockSubmitBtn('Сохраняю...');
+    blockSubmitBtn('Публикация...');
     outputData(
       () => {
         closeUploadOverlay();
