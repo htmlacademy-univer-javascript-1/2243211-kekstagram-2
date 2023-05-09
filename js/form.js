@@ -88,7 +88,7 @@ imgUploadForm.addEventListener('submit', (evt) => {
 
   const isValid = pristine.validate();
   if (isValid) {
-    blockSubmitBtn('Публикация...');
+    blockSubmitBtn('Публикую...');
     outputData(
       () => {
         closeUploadOverlay();
