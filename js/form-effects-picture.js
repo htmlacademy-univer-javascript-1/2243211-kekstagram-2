@@ -1,40 +1,77 @@
 const DEFAULT_FILTER_VALUE = 100;
+const Filters = {
+  none: {
+    effect: '',
+    minValue: 0,
+    maxValue: 100,
+    step: 1,
+    filter: '',
+    measurement: '',
+    hideFilter: true
+  },
+  chrome: {
+    effect: 'chrome',
+    minValue: 0,
+    maxValue: 1,
+    step: 0.1,
+    filter: 'grayscale',
+    measurement: '',
+    hideFilter: false
+  },
+  sepia: {
+    effect: 'sepia',
+    minValue: 0,
+    maxValue: 1,
+    step: 0.1,
+    filter: 'sepia',
+    measurement: '',
+    hideFilter: false
+  },
+  marvin: {
+    effect: 'marvin',
+    minValue: 0,
+    maxValue: 100,
+    step: 1,
+    filter: 'invert',
+    measurement: '%',
+    hideFilter: false
+  },
+  phobos: {
+    effect: 'phobos',
+    minValue: 0,
+    maxValue: 3,
+    step: 0.1,
+    filter: 'blur',
+    measurement: 'px',
+    hideFilter: false
+  },
+  heat: {
+    effect: 'heat',
+    minValue: 1,
+    maxValue: 3,
+    step: 0.1,
+    filter: 'brightness',
+    measurement: '',
+    hideFilter: false
+  }
+};
 
-const previewPhotoElement = document.querySelector('.img-upload__preview');
-const effectLevelValueElement = document.querySelector('.effect-level__value');
+const previewPhoto = document.querySelector('.img-upload__preview');
+const effectLevelValue = document.querySelector('.effect-level__value');
 const sliderElement = document.querySelector('.effect-level__slider');
 const effectsRadioElement = document.querySelector('.img-upload__effects');
 
-class Filter {
-  constructor(name, step, minValue, maxValue, measurement, filter) {
-    this.name = name;
-    this.step = step;
-    this.minValue = minValue;
-    this.maxValue = maxValue;
-    this.measurement = measurement;
-    this.filter = filter;
-  }
-}
+let actualFilter = Filters.none;
+let actualFilterClass = '';
+let actualFilterValue = DEFAULT_FILTER_VALUE;
 
-const filters = {
-  none: new Filter('none', 1, 0, 100, '', ''),
-  marvin: new Filter('marvin', 1, 0, 100, '%', 'invert'),
-  chrome: new Filter('chrome', 0.1, 0, 1, '', 'grayscale'),
-  sepia: new Filter('sepia', 0.1, 0, 1, '', 'sepia'),
-  phobos: new Filter('phobos', 0.1, 0, 3, 'px', 'blur'),
-  heat: new Filter('heat', 0.1, 1, 3, '', 'brightness')
-};
-
-let currentFilter = filters.none;
-let currentFilterClass = '';
-let currentFilterValue = DEFAULT_FILTER_VALUE;
+sliderElement.classList.add('visually-hidden');
 
 noUiSlider.create(sliderElement, {
   range: {
     min: 0,
-    max: 100
+    max: 100,
   },
-
   start: 100,
   step: 1,
   connect: 'lower',
@@ -47,92 +84,77 @@ noUiSlider.create(sliderElement, {
     },
     from: function (value) {
       return parseFloat(value);
-    }
-  }
+    },
+  },
 });
 
-function removeFilter() {
-  previewPhotoElement.style['filter'] = '';
-  sliderElement.classList.add('visually-hidden');
-}
+const changeFilter = (effect) => {
+  if (actualFilterClass !== '') {
+    previewPhoto.classList.remove(actualFilterClass);
+  }
 
-function updateSliderOptions(filter) {
+  actualFilter = effect;
+  actualFilterValue = effect.maxValue;
+
+  if (effect.effect !== '') {
+    actualFilterClass = `effects__preview--${effect.effect}`;
+    previewPhoto.classList.add(actualFilterClass);
+  }
+
+  if (effect.filter !== Filters.none.filter) {
+    previewPhoto.style['filter'] = `${effect.filter}(${effect.maxValue}${effect.measurement})`;
+  }
+  else {
+    previewPhoto.style['filter'] = '';
+  }
+
+  effectLevelValue.value = actualFilterValue;
+
+  if (effect.hideFilter) {
+    sliderElement.classList.add('visually-hidden');
+  } else {
+    sliderElement.classList.remove('visually-hidden');
+  }
+
   sliderElement.noUiSlider.updateOptions({
     range: {
-      min: filter.minValue,
-      max: filter.maxValue
+      min: effect.minValue,
+      max: effect.maxValue
     },
-    start: filter.maxValue,
-    step: filter.step
+    start: effect.maxValue,
+    step: effect.step
   });
-}
+};
 
-function applyFilter(filter) {
-  currentFilterClass = `effects__preview--${filter.name}`;
-  previewPhotoElement.classList.add(currentFilterClass);
-  previewPhotoElement.style[
-    'filter'
-  ] = `${filter.filter}(${filter.maxValue}${filter.measurement})`;
-  sliderElement.classList.remove('visually-hidden');
-}
+const changeFilterValue = (value) => {
+  actualFilterValue = value;
+  previewPhoto.style['filter'] = `${actualFilter.filter}(${value}${actualFilter.measurement})`;
+};
 
-function changeFilter(filter) {
-  if (currentFilterClass !== '') {
-    previewPhotoElement.classList.remove(currentFilterClass);
-  }
-  currentFilter = filter;
-  currentFilterValue = filter.maxValue;
+const onEffectsRadioChange = (evt) => {
+  const value = evt.target.value;
+  changeFilter(Filters[value]);
+};
 
-  if (filter.name !== 'none') {
-    applyFilter(filter);
-  } else {
-    removeFilter();
-  }
-  effectLevelValueElement.value = currentFilterValue;
-
-  updateSliderOptions(filter);
-}
-
-function changeFilterValue(value) {
-  currentFilterValue = value;
-  previewPhotoElement.style[
-    'filter'
-  ] = `${currentFilter.filter}(${value}${currentFilter.measurement})`;
-}
-
-function handleEffectRadioChange(event) {
-  const filterName = event.target.value;
-  changeFilter(filters[filterName]);
-}
-
-function resetRadiosValue() {
-  const filterRadiosElement =
-    effectsRadioElement.querySelectorAll('.effects__radio');
-  filterRadiosElement.forEach((element) => {
+const reloadRadiosValue = () => {
+  const filterRadios = effectsRadioElement.querySelectorAll('.effects__radio');
+  filterRadios.forEach((element) => {
     element.checked = false;
   });
-  filterRadiosElement[0].checked = true;
-}
+  filterRadios[0].checked = true;
+};
 
-function resetFilters() {
-  changeFilter(filters.none);
-  resetRadiosValue();
-  effectsRadioElement.removeEventListener('change', handleEffectRadioChange);
-}
+const reloadFilters = () => {
+  changeFilter(Filters.none);
+  reloadRadiosValue();
+};
 
-effectsRadioElement.addEventListener('change', handleEffectRadioChange);
+effectsRadioElement.addEventListener('change', onEffectsRadioChange);
 
 sliderElement.noUiSlider.on('update', () => {
   const sliderValue = sliderElement.noUiSlider.get();
-  effectLevelValueElement.value = sliderValue;
+  effectLevelValue.value = sliderValue;
   changeFilterValue(sliderValue);
 });
 
-function addFilters() {
-  if (currentFilter === filters.none) {
-    sliderElement.classList.add('visually-hidden');
-  }
-  effectsRadioElement.addEventListener('change', handleEffectRadioChange);
-}
-
-export { addFilters, resetFilters };
+export { reloadFilters };
